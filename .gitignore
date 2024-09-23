@@ -15,3 +15,5 @@ mpenv/
 # Ignore IDE files (e.g., for VSCode or PyCharm)
 .vscode/
 .idea/
+
+allfiles.txt/

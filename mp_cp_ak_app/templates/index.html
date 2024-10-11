@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <h1>Customer Churn Prediction</h1>
+
+    {% if result %}
+        <div class="result">
+            <h2>Prediction Result</h2>
+            <p><strong>Churn Status:</strong> {{ result.churn_status }}</p>
+            <p><strong>Churn Probability:</strong> {{ result.churn_probability }}</p>
+            <h3>User Input:</h3>
+            <ul>
+                {% for key, value in result.input_data.items() %}
+                    <li><strong>{{ key }}:</strong> {{ value }}</li>
+                {% endfor %}
+            </ul>
+
+            {% if result.suggestions %}
+                <h3>Actionable Suggestions:</h3>
+                <ul>
+                    {% for suggestion in result.suggestions %}
+                        <li>{{ suggestion }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        <label for="Tenure">Tenure</label>
+        <input type="number" id="Tenure" name="Tenure" value="{{ request.form['Tenure'] }}" required>
+
+        <label for="SatisfactionScore">Satisfaction Score</label>
+        <input type="number" id="SatisfactionScore" name="SatisfactionScore" value="{{ request.form['SatisfactionScore'] }}" required>
+
+        <label for="Complain">Complaints (0 for No, 1 for Yes)</label>
+        <input type="number" id="Complain" name="Complain" value="{{ request.form['Complain'] }}" required>
+
+        <label for="DaySinceLastOrder">Days Since Last Order</label>
+        <input type="number" id="DaySinceLastOrder" name="DaySinceLastOrder" value="{{ request.form['DaySinceLastOrder'] }}" required>
+
+        <label for="CouponUsed">Coupons Used</label>
+        <input type="number" id="CouponUsed" name="CouponUsed" value="{{ request.form['CouponUsed'] }}" required>
+
+        <label for="WarehouseToHome">Distance(KM) between Warehouse and Home</label>
+        <input type="number" id="WarehouseToHome" name="WarehouseToHome" value="{{ request.form['WarehouseToHome'] }}" required>
+
+        <label for="NumberOfAddress">Number of Addresses</label>
+        <input type="number" id="NumberOfAddress" name="NumberOfAddress" value="{{ request.form['NumberOfAddress'] }}" required>
+
+        <label for="OrderCount">Order Count</label>
+        <input type="number" id="OrderCount" name="OrderCount" value="{{ request.form['OrderCount'] }}" required>
+
+        <label for="CityTier">City Tier</label>
+        <input type="number" id="CityTier" name="CityTier" value="{{ request.form['CityTier'] }}" required>
+
+        <label for="MaritalStatus">Marital Status</label>
+        <select id="MaritalStatus" name="MaritalStatus" required>
+            <option value="Single" {% if request.form['MaritalStatus'] == 'Single' %}selected{% endif %}>Single</option>
+            <option value="Divorced" {% if request.form['MaritalStatus'] == 'Divorced' %}selected{% endif %}>Divorced</option>
+            <option value="Married" {% if request.form['MaritalStatus'] == 'Married' %}selected{% endif %}>Married</option>
+        </select>
+
+        <label for="PreferredLoginDevice">Preferred Login Device</label>
+        <select id="PreferredLoginDevice" name="PreferredLoginDevice" required>
+            <option value="Mobile Phone" {% if request.form['PreferredLoginDevice'] == 'Mobile Phone' %}selected{% endif %}>Mobile Phone</option>
+            <option value="Phone" {% if request.form['PreferredLoginDevice'] == 'Phone' %}selected{% endif %}>Phone</option>
+            <option value="Computer" {% if request.form['PreferredLoginDevice'] == 'Computer' %}selected{% endif %}>Computer</option>
+        </select>
+
+        <label for="PreferredPaymentMode">Preferred Payment Mode</label>
+        <select id="PreferredPaymentMode" name="PreferredPaymentMode" required>
+            <option value="Debit Card" {% if request.form['PreferredPaymentMode'] == 'Debit Card' %}selected{% endif %}>Debit Card</option>
+            <option value="UPI" {% if request.form['PreferredPaymentMode'] == 'UPI' %}selected{% endif %}>UPI</option>
+            <option value="CC" {% if request.form['PreferredPaymentMode'] == 'CC' %}selected{% endif %}>CC</option>
+            <option value="Cash on Delivery" {% if request.form['PreferredPaymentMode'] == 'Cash on Delivery' %}selected{% endif %}>Cash on Delivery</option>
+            <option value="E wallet" {% if request.form['PreferredPaymentMode'] == 'E wallet' %}selected{% endif %}>E wallet</option>
+            <option value="COD" {% if request.form['PreferredPaymentMode'] == 'COD' %}selected{% endif %}>COD</option>
+            <option value="Credit Card" {% if request.form['PreferredPaymentMode'] == 'Credit Card' %}selected{% endif %}>Credit Card</option>
+        </select>
+
+        <label for="Gender">Gender</label>
+        <select id="Gender" name="Gender" required>
+            <option value="Female" {% if request.form['Gender'] == 'Female' %}selected{% endif %}>Female</option>
+            <option value="Male" {% if request.form['Gender'] == 'Male' %}selected{% endif %}>Male</option>
+        </select>
+
+        <label for="PreferedOrderCat">Preferred Order Category</label>
+        <select id="PreferedOrderCat" name="PreferedOrderCat" required>
+            <option value="Laptop & Accessory" {% if request.form['PreferedOrderCat'] == 'Laptop & Accessory' %}selected{% endif %}>Laptop & Accessory</option>
+            <option value="Mobile" {% if request.form['PreferedOrderCat'] == 'Mobile' %}selected{% endif %}>Mobile</option>
+            <option value="Mobile Phone" {% if request.form['PreferedOrderCat'] == 'Mobile Phone' %}selected{% endif %}>Mobile Phone</option>
+            <option value="Others" {% if request.form['PreferedOrderCat'] == 'Others' %}selected{% endif %}>Others</option>
+            <option value="Fashion" {% if request.form['PreferedOrderCat'] == 'Fashion' %}selected{% endif %}>Fashion</option>
+            <option value="Grocery" {% if request.form['PreferedOrderCat'] == 'Grocery' %}selected{% endif %}>Grocery</option>
+        </select>
+
+        <button type="submit">Predict Churn</button>
+    </form>
+
+</body>
+</html>

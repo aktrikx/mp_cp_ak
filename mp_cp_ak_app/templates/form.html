@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Customer Churn Prediction</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Churn Prediction</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.tenure.label }} 
+                <input type="number" name="tenure" min="0" placeholder="Enter tenure in months" value="{{ form.tenure.data }}">
+            </div>
+            <div>
+                {{ form.warehouse_to_home.label }} 
+                <input type="number" name="warehouse_to_home" min="0" placeholder="Distance to home (km)" value="{{ form.warehouse_to_home.data }}">
+            </div>
+            <div>
+                {{ form.number_of_address.label }} 
+                <input type="number" name="number_of_address" min="0" placeholder="Number of addresses" value="{{ form.number_of_address.data }}">
+            </div>
+            <div>
+                {{ form.day_since_last_order.label }} 
+                <input type="number" name="day_since_last_order" min="0" placeholder="Days since last order" value="{{ form.day_since_last_order.data }}">
+            </div>
+            <div>
+                {{ form.complain.label }} 
+                {{ form.complain() }}
+            </div>
+            <div>
+                {{ form.satisfaction_score.label }} 
+                <input type="number" name="satisfaction_score" step="0.1" min="1" max="5" placeholder="Satisfaction score (1-5)" value="{{ form.satisfaction_score.data }}">
+            </div>
+            <div>
+                {{ form.order_count.label }} 
+                <input type="number" name="order_count" min="0" placeholder="Order count" value="{{ form.order_count.data }}">
+            </div>
+            <div>
+                {{ form.coupon_used.label }} 
+                <input type="number" name="coupon_used" min="0" placeholder="Coupons used" value="{{ form.coupon_used.data }}">
+            </div>
+            <div>
+                {{ form.city_tier.label }} 
+                {{ form.city_tier() }}
+            </div>
+            <div>
+                {{ form.submit() }}
+            </div>
+        </form>
+
+        {% if prediction_result %}
+        <h2>Prediction Result</h2>
+        <p>{{ prediction_result }}</p>
+
+        <h3>Input Values</h3>
+        <ul>
+            {% for key, value in input_values.items() %}
+                <li>{{ key }}: {{ value }}</li>
+            {% endfor %}
+        </ul>
+
+        {% if actionable_suggestions %}
+        <h3>Actionable Suggestions</h3>
+        <ul>
+            {% for suggestion in actionable_suggestions %}
+                <li>{{ suggestion }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>

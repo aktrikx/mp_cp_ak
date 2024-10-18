@@ -2,48 +2,114 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #8fa2b3; /* Navy blue background */
+    color: #000000; /* Black text color */
 }
 
-h1, h2, h3 {
-    color: #333;
+h1 {
+    background: linear-gradient(to right, #4a80e4, #4b8ee4); /* Gradient for heading */
+    padding: 15px; /* Increased padding around the text */
+    border-bottom: 12px solid #08284a; /* Thicker blue border below the heading */
+    margin: 0; /* Remove default margin */
+    text-align: center; /* Center the heading */
+    color: #000000; /* Black text color for contrast */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* 3D shadow effect */
+    border-radius: 5px; /* Rounded corners */
 }
 
-form {
-    background-color: white;
-    padding: 20px;
+h2, h3 {
+    color: #000000; /* Black for subheadings */
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Text shadow for depth */
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    padding: 10px;
+}
+
+.form-container, .result-container {
+    background-color:  #e9f7fe;; /* White background for forms */
+    padding: 15px;
     border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin: auto;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); /* Deeper shadow for 3D effect */
+    flex: 1;
+    min-width: 400px;
+    max-width: 600px;
+    transition: transform 0.2s; /* Smooth scaling on hover */
+}
+
+.form-container:hover, .result-container:hover {
+    transform: scale(1.02); /* Slight zoom on hover for 3D effect */
+}
+
+.result-container {
+    background-color: #e9f7fe; /* Light blue for result container */
+    border: 2px solid #02050a;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Softer shadow for contrast */
+}
+
+.form-container {
+    background-color: #e9f7fe; /* Light blue for result container */
+    border: 2px solid #02050a;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Softer shadow for contrast */
 }
 
 input[type="text"], input[type="number"], select {
-    width: 100%;
+    width: 94.5%; /* Full width for all inputs */
     padding: 10px;
-    margin: 5px 0 15px;
-    border: 1px solid #ccc;
+    margin: 5px 0 13px;
+    border: 2px solid #0f0f0f;
     border-radius: 4px;
+    background-color: #e3f5f5; /* Light gray for input background */
+    color: #000000; /* Black text in inputs for better readability */
+    transition: box-shadow 0.2s; /* Smooth shadow on focus */
+}
+
+select {
+    width: 98.5%; /* Ensuring dropdown matches other inputs */
+}
+
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    box-shadow: 0 0 5px #070707; /* Focus shadow effect */
+    border-color: #141415; /* Border color change on focus */
 }
 
 button {
     padding: 10px;
-    background-color: #28a745;
+    background-color: #28a745; /* Green button background */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     width: 100%;
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transition for hover */
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #218838; /* Darker green on hover */
+    transform: translateY(-2px); /* Lift effect on hover */
 }
 
-.result {
-    background-color: #e9f7fe;
-    padding: 10px;
-    border: 1px solid #007bff;
-    border-radius: 5px;
-    margin-top: 20px;
+.result h2 {
+    margin-top: 0;
+}
+
+.result ul {
+    list-style-type: none;
+    padding: 0;
+    color: #000000; /* Black text for result list */
+}
+
+.result ul li {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: row-reverse;
+    }
 }

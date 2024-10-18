@@ -1,104 +1,151 @@
 from flask import Flask, render_template, request
 import pandas as pd
+import joblib
 import pickle
 
 app = Flask(__name__)
 
-# Load the trained model
-model_path = '/Users/arjunkhatiwada/Documents/master_project_code/mp_cp_ak/random_forest_model_after_smote.pkl'
+# Define paths
+model_path = '/Users/arjunkhatiwada/Documents/master_project_code/mp_cp_ak/voting_classifier_rf_xgb.pkl'
+scaler_path = '/Users/arjunkhatiwada/Documents/master_project_code/mp_cp_ak/scaler.pkl'
+
+# Load the trained model and scaler
+# voting_classifier_model = joblib.load(model_path)
+# with open(model_path, 'rb') as file:
+#     voting_classifier_model = pickle.load(file)
+
 with open(model_path, 'rb') as file:
-    loaded_rf_model = pickle.load(file)
+    voting_classifier_model = pickle.load(file)
+
+# with open(scaler_path, 'rb') as file:
+#     loaded_scaler = pickle.load(file)
+
+loaded_scaler = joblib.load(scaler_path)
 
 # Define the route for the home page
 @app.route('/', methods=['GET', 'POST'])
 def index():
     result = None  # To store prediction results
     if request.method == 'POST':
-        # Get data from form
-        user_input_data = {
-            'Tenure': request.form['Tenure'],
-            'SatisfactionScore': request.form['SatisfactionScore'],
-            'Complain': request.form['Complain'],
-            'DaySinceLastOrder': request.form['DaySinceLastOrder'],
-            'CouponUsed': request.form['CouponUsed'],
-            'WarehouseToHome': request.form['WarehouseToHome'],
-            'NumberOfAddress': request.form['NumberOfAddress'],
-            'OrderCount': request.form['OrderCount'],
-            'CityTier': request.form['CityTier'],
-            'MaritalStatus': request.form['MaritalStatus'],
-            'PreferredLoginDevice': request.form['PreferredLoginDevice'],
-            'PreferredPaymentMode': request.form['PreferredPaymentMode'],
-            'Gender': request.form['Gender'],
-            'PreferedOrderCat': request.form['PreferedOrderCat']
-        }
-
-        # Step 3: Convert input data to a DataFrame
-        user_df = pd.DataFrame([user_input_data])
-
-        # Step 4: Transform categorical columns using one-hot encoding
-        user_df = pd.get_dummies(user_df, columns=['MaritalStatus', 'PreferredLoginDevice', 'PreferredPaymentMode', 'Gender', 'PreferedOrderCat'])
-
-        # Step 5: Get the feature names from the model training
-        trained_feature_names = loaded_rf_model.feature_names_in_
-
-        # Step 6: Ensure all columns expected by the model are present in the DataFrame
-        for col in trained_feature_names:
-            if col not in user_df.columns:
-                user_df[col] = 0
-
-        # Reorder columns to match the order used during training
-        user_df = user_df[trained_feature_names]
-
-        # Step 7: Use the loaded model to predict churn
-        y_pred = loaded_rf_model.predict(user_df)
-
-        # Step 8: Get the probability of churn (percentage)
-        y_proba = loaded_rf_model.predict_proba(user_df)
-
-        # Prepare output
-        churn_status = "Likely to Churn" if y_pred[0] == 1 else "Likely to Not Churn"
-        churn_probability = y_proba[0][1] * 100  # Convert to percentage
-
-        # Prepare suggestions if customer is likely to churn
-        suggestions = []
-        if y_pred[0] == 1:  # Customer is likely to churn
-            actionable_suggestions = {
-                'Tenure': "Engage the customer through targeted loyalty programs to increase their tenure.",
-                'SatisfactionScore': "Conduct a survey to gather feedback and improve customer satisfaction.",
-                'Complain': "Implement a proactive outreach strategy for customers with complaints to resolve issues quickly.",
-                'DaySinceLastOrder': "Send reminders or incentives to encourage more frequent orders from customers.",
-                'CouponUsed': "Analyze coupon usage patterns; consider offering personalized promotions to high-usage customers.",
-                'WarehouseToHome': "Evaluate delivery times and explore options to enhance the efficiency of the delivery process.",
-                'NumberOfAddress': "Encourage customers to update their addresses for better service delivery options.",
-                'OrderCount': "Increase engagement with targeted marketing campaigns based on order history.",
-                'CityTier': "Customize offers based on city tier to enhance relevance and customer engagement."
+        try:
+            # Get data from form
+            user_input_data = {
+                'Tenure': int(request.form['Tenure']),
+                'SatisfactionScore': int(request.form['SatisfactionScore']),
+                'Complain': int(request.form['Complain']),
+                'DaySinceLastOrder': int(request.form['DaySinceLastOrder']),
+                'CouponUsed': int(request.form['CouponUsed']),
+                'WarehouseToHome': int(request.form['WarehouseToHome']),
+                'NumberOfAddress': int(request.form['NumberOfAddress']),
+                'OrderCount': int(request.form['OrderCount']),
+                'CityTier': int(request.form['CityTier']),
+                'MaritalStatus': request.form['MaritalStatus'],
+                'PreferredLoginDevice': request.form['PreferredLoginDevice'],
+                'PreferredPaymentMode': request.form['PreferredPaymentMode'],
+                'Gender': request.form['Gender'],
+                'PreferedOrderCat': request.form['PreferedOrderCat']
             }
 
-            # Check feature importance and user input dynamically
-            for feature in actionable_suggestions.keys():
-                if feature in trained_feature_names:
-                    # You can modify conditions based on user_df values to be more specific
-                    if feature == 'SatisfactionScore' and float(user_df['SatisfactionScore'].values[0]) < 3:
-                        suggestions.append(actionable_suggestions[feature])
-                    elif feature == 'Complain' and int(user_df['Complain'].values[0]) == 1:
-                        suggestions.append(actionable_suggestions[feature])
-                    elif feature == 'DaySinceLastOrder' and int(user_df['DaySinceLastOrder'].values[0]) > 60:
-                        suggestions.append(actionable_suggestions[feature])
-                    elif feature == 'CouponUsed' and int(user_df['CouponUsed'].values[0]) > 3:
-                        suggestions.append(actionable_suggestions[feature])
-                    else:
-                        suggestions.append(actionable_suggestions[feature])
+            # Create DataFrame from user input
+            df_test = pd.DataFrame(user_input_data, index=[0])
+            
+            # One-hot encode for categorical variables
+            categorical_df_test = df_test.select_dtypes(include=['object'])
+            df_test = pd.get_dummies(df_test, columns=list(categorical_df_test.columns), drop_first=False)
+            
+            # Ensure all expected features are present
+            X_train_cols = [
+                'Tenure', 'CityTier', 'WarehouseToHome', 'SatisfactionScore',
+                'NumberOfAddress', 'Complain', 'CouponUsed', 'OrderCount',
+                'DaySinceLastOrder', 'PreferredLoginDevice_Mobile Phone',
+                'PreferredLoginDevice_Phone', 'PreferredPaymentMode_COD',
+                'PreferredPaymentMode_Cash on Delivery',
+                'PreferredPaymentMode_Credit Card', 'PreferredPaymentMode_Debit Card',
+                'PreferredPaymentMode_E wallet', 'PreferredPaymentMode_UPI',
+                'Gender_Male', 'PreferedOrderCat_Grocery',
+                'PreferedOrderCat_Laptop & Accessory', 'PreferedOrderCat_Mobile',
+                'PreferedOrderCat_Mobile Phone', 'PreferedOrderCat_Others',
+                'MaritalStatus_Married', 'MaritalStatus_Single'
+            ]
 
-        # Create result dictionary to pass to template
-        result = {
-            'churn_status': churn_status,
-            'churn_probability': f"{churn_probability:.2f}%",
-            'input_data': user_input_data,
-            'suggestions': suggestions
-        }
+            # Ensure all columns expected by the model are present in the DataFrame
+            for col in X_train_cols:
+                if col not in df_test.columns:
+                    df_test[col] = 0
+
+            # Reorder columns to match the order used during training
+            df_test = df_test[X_train_cols]
+
+            # Store the original input values for suggestions
+            original_values = user_input_data.copy()
+
+            # Scale the input data
+            scaled_row = loaded_scaler.transform(df_test)
+            user_df = pd.DataFrame(scaled_row, columns=X_train_cols)
+
+            # Use the loaded model to predict churn
+            y_pred = voting_classifier_model.predict(user_df)
+            y_proba = voting_classifier_model.predict_proba(user_df)
+
+            # Prepare output
+            churn_status = "Likely to Churn" if y_pred[0] == 1 else "Likely to Not Churn"
+            churn_probability = y_proba[0][1] * 100  # Convert to percentage
+
+            # Prepare dynamic suggestions based on original user input
+            suggestions = []
+
+            if y_pred[0] == 1:  # Only provide suggestions if likely to churn
+                # Use original input values instead of scaled values
+                tenure = original_values['Tenure']
+                satisfaction_score = original_values['SatisfactionScore']
+                complain = original_values['Complain']
+                day_since_last_order = original_values['DaySinceLastOrder']
+                coupon_used = original_values['CouponUsed']
+                warehouse_to_home = original_values['WarehouseToHome']
+                number_of_address = original_values['NumberOfAddress']
+                order_count = original_values['OrderCount']
+                city_tier = original_values['CityTier']
+
+                # Define suggestions based on conditions using original values
+                if tenure < 3:
+                    suggestions.append("Engage the customer through targeted loyalty programs to increase their tenure.")
+                if satisfaction_score < 3:
+                    suggestions.append("Conduct a survey to gather feedback and improve customer satisfaction.")
+                if complain == 1:
+                    suggestions.append("Implement a proactive outreach strategy for customers with complaints to resolve issues quickly.")
+                if day_since_last_order > 60:
+                    suggestions.append("Send reminders or incentives to encourage more frequent orders from customers.")
+                if coupon_used > 3:
+                    suggestions.append("Analyze coupon usage patterns; consider offering personalized promotions to high-usage customers.")
+                if warehouse_to_home > 10:  # Assuming 10 is a threshold for long delivery distance
+                    suggestions.append("Evaluate delivery times and explore options to enhance the efficiency of the delivery process.")
+                if number_of_address < 2:
+                    suggestions.append("Encourage customers to update their addresses for better service delivery options.")
+                if order_count < 3:
+                    suggestions.append("Increase engagement with targeted marketing campaigns based on order history.")
+
+                # Suggestions based on city tier values without hierarchy
+                if city_tier == 1:
+                    suggestions.append("Offer exclusive deals for customers in Tier 1 cities to attract them.")
+                elif city_tier == 2:
+                    suggestions.append("Focus on improving service delivery and customer support in Tier 2 cities.")
+                elif city_tier == 3:
+                    suggestions.append("Consider localized marketing strategies and community engagement for Tier 3 cities.")
+
+            # Create result dictionary to pass to template
+            result = {
+                'churn_status': churn_status,
+                'churn_probability': f"{churn_probability:.2f}%",
+                'input_data': original_values,  # Use original values here for display
+                'suggestions': suggestions
+            }
+
+        except KeyError as e:
+            print(f"Missing key in form data: {e}")
+            return "Form data is missing required fields.", 400
 
     return render_template('index.html', result=result)
 
 # Run the app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

@@ -10,63 +10,111 @@
     <div class="container">
         <h1>Customer Churn Prediction</h1>
         <form method="POST">
-            {{ form.hidden_tag() }}
             <div>
-                {{ form.tenure.label }} 
-                <input type="number" name="tenure" min="0" placeholder="Enter tenure in months" value="{{ form.tenure.data }}">
+                <label for="tenure">Tenure</label>
+                <input type="number" name="Tenure" min="0" placeholder="Enter tenure in months" value="{{ form.tenure.data }}">
             </div>
             <div>
-                {{ form.warehouse_to_home.label }} 
-                <input type="number" name="warehouse_to_home" min="0" placeholder="Distance to home (km)" value="{{ form.warehouse_to_home.data }}">
+                <label for="warehouse_to_home">Warehouse to Home Distance</label>
+                <input type="number" name="WarehouseToHome" min="0" placeholder="Distance to home (km)" value="{{ form.warehouse_to_home.data }}">
             </div>
             <div>
-                {{ form.number_of_address.label }} 
-                <input type="number" name="number_of_address" min="0" placeholder="Number of addresses" value="{{ form.number_of_address.data }}">
+                <label for="number_of_address">Number of Addresses</label>
+                <input type="number" name="NumberOfAddress" min="0" placeholder="Number of addresses" value="{{ form.number_of_address.data }}">
             </div>
             <div>
-                {{ form.day_since_last_order.label }} 
-                <input type="number" name="day_since_last_order" min="0" placeholder="Days since last order" value="{{ form.day_since_last_order.data }}">
+                <label for="day_since_last_order">Days Since Last Order</label>
+                <input type="number" name="DaySinceLastOrder" min="0" placeholder="Days since last order" value="{{ form.day_since_last_order.data }}">
             </div>
             <div>
-                {{ form.complain.label }} 
-                {{ form.complain() }}
+                <label for="complain">Complain</label>
+                <select name="Complain" id="complain">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
             </div>
             <div>
-                {{ form.satisfaction_score.label }} 
-                <input type="number" name="satisfaction_score" step="0.1" min="1" max="5" placeholder="Satisfaction score (1-5)" value="{{ form.satisfaction_score.data }}">
+                <label for="satisfaction_score">Satisfaction Score</label>
+                <input type="number" name="SatisfactionScore" step="0.1" min="1" max="5" placeholder="Satisfaction score (1-5)" value="{{ form.satisfaction_score.data }}">
             </div>
             <div>
-                {{ form.order_count.label }} 
-                <input type="number" name="order_count" min="0" placeholder="Order count" value="{{ form.order_count.data }}">
+                <label for="order_count">Order Count</label>
+                <input type="number" name="OrderCount" min="0" placeholder="Order count" value="{{ form.order_count.data }}">
             </div>
             <div>
-                {{ form.coupon_used.label }} 
-                <input type="number" name="coupon_used" min="0" placeholder="Coupons used" value="{{ form.coupon_used.data }}">
+                <label for="coupon_used">Coupons Used</label>
+                <input type="number" name="CouponUsed" min="0" placeholder="Coupons used" value="{{ form.coupon_used.data }}">
             </div>
             <div>
-                {{ form.city_tier.label }} 
-                {{ form.city_tier() }}
+                <label for="city_tier">City Tier</label>
+                <select name="CityTier" id="city_tier">
+                    <option value="1">Tier 1</option>
+                    <option value="2">Tier 2</option>
+                    <option value="3">Tier 3</option>
+                </select>
             </div>
             <div>
-                {{ form.submit() }}
+                <label for="marital_status">Marital Status</label>
+                <select name="MaritalStatus" id="marital_status">
+                    <option value="Married">Married</option>
+                    <option value="Single">Single</option>
+                </select>
+            </div>
+            <div>
+                <label for="preferred_login_device">Preferred Login Device</label>
+                <select name="PreferredLoginDevice" id="preferred_login_device">
+                    <option value="Mobile Phone">Mobile Phone</option>
+                    <option value="Phone">Phone</option>
+                </select>
+            </div>
+            <div>
+                <label for="preferred_payment_mode">Preferred Payment Mode</label>
+                <select name="PreferredPaymentMode" id="preferred_payment_mode">
+                    <option value="COD">Cash on Delivery</option>
+                    <option value="Cash on Delivery">Cash on Delivery</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="E wallet">E wallet</option>
+                    <option value="UPI">UPI</option>
+                </select>
+            </div>
+            <div>
+                <label for="gender">Gender</label>
+                <select name="Gender" id="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div>
+                <label for="prefered_order_cat">Preferred Order Category</label>
+                <select name="PreferedOrderCat" id="prefered_order_cat">
+                    <option value="Grocery">Grocery</option>
+                    <option value="Laptop & Accessory">Laptop & Accessory</option>
+                    <option value="Mobile">Mobile</option>
+                    <option value="Mobile Phone">Mobile Phone</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+            <div>
+                <input type="submit" value="Submit">
             </div>
         </form>
 
-        {% if prediction_result %}
+        {% if result %}
         <h2>Prediction Result</h2>
-        <p>{{ prediction_result }}</p>
+        <p>{{ result.churn_status }}</p>
 
         <h3>Input Values</h3>
         <ul>
-            {% for key, value in input_values.items() %}
+            {% for key, value in result.input_data.items() %}
                 <li>{{ key }}: {{ value }}</li>
             {% endfor %}
         </ul>
 
-        {% if actionable_suggestions %}
+        {% if result.suggestions %}
         <h3>Actionable Suggestions</h3>
         <ul>
-            {% for suggestion in actionable_suggestions %}
+            {% for suggestion in result.suggestions %}
                 <li>{{ suggestion }}</li>
             {% endfor %}
         </ul>

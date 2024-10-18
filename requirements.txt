@@ -1,0 +1,9 @@
+flask
+pandas
+joblib
+scikit-learn
+xgboost
+seaborn
+statsmodels
+imbalanced-learn
+openpyxl

@@ -17,3 +17,5 @@ mpenv/
 .idea/
 
 allfiles.txt/
+
+.DS_Store/

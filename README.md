@@ -1,4 +1,4 @@
-# mp_cp_ak
-This is the repository for my master's final project
 
-e- commerce customer churn dataset: https://www.kaggle.com/datasets/ankitverma2010/ecommerce-customer-churn-analysis-and-prediction
+Abstract: This is the repository for my master's final project exploring customer retention strategies in the e-commerce sector by developing machine learning models to predict customer churn. Leveraging a dataset with imbalanced classes, we addressed class imbalance using Synthetic Minority Over-sampling Technique (SMOTE) and implemented data preprocessing techniques, including outlier detection, feature scaling, and one-hot encoding. Key algorithms applied were Logistic Regression, Random Forest, and XGBoost, chosen for their effectiveness in classification tasks and feature interpretation. Model performance was evaluated using metrics suited for imbalanced data, such as F1-score and recall. Results revealed critical predictors of churn, enabling actionable insights to target at-risk customers. This study highlights the value of machine learning in guiding retention strategies and proposes future enhancements, including real-time model deployment using Python Flask to further support proactive customer relationship management in e-commerce.
+
+Dataset: e- commerce customer churn dataset: https://www.kaggle.com/datasets/ankitverma2010/ecommerce-customer-churn-analysis-and-prediction
